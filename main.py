@@ -1,8 +1,6 @@
 import os
-
 import requests
 from dotenv import load_dotenv
-
 
 # Load environment variables from .env
 load_dotenv()
@@ -14,7 +12,6 @@ API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
 def chat_with_ai(message: str) -> str:
-    """Send a message to the Grok model through OpenRouter."""
 
     if not API_KEY or not MODEL:
         raise ValueError(
@@ -67,16 +64,9 @@ def main():
             answer = chat_with_ai(user_message)
             print(f"\nAI: {answer}\n")
 
-        except requests.exceptions.HTTPError as error:
-            print(f"API error: {error}")
-            if error.response is not None:
-                print(error.response.text)
 
-        except requests.exceptions.RequestException as error:
-            print(f"Connection error: {error}")
-
-        except (ValueError, KeyError, IndexError) as error:
-            print(f"Configuration or response error: {error}")
+        except Exception as error:
+            print(f"Error: {error}\n")
 
 
 if __name__ == "__main__":
