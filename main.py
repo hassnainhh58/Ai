@@ -52,7 +52,6 @@ def chat_with_ai(message: str) -> str:
 
 def main():
     print("===== Simple Grok Chat =====")
-    print("Type 'exit' to stop.\n")
 
     while True:
         user_message = input("You: ").strip()
