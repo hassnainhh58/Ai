@@ -1,73 +1,58 @@
+# main.py
 import os
-import requests
 from dotenv import load_dotenv
+from agent import run_agent
 
-# Load environment variables from .env
+# Load variables from .env
 load_dotenv()
 
-API_KEY = os.getenv("OPENROUTER_API_KEY")
-MODEL = os.getenv("LLM_MODEL")
+LLM_API_KEY = os.getenv("LLM_API_KEY")
+LLM_MODEL = os.getenv("LLM_MODEL")
 
-API_URL = "https://openrouter.ai/api/v1/chat/completions"
-
-
-def chat_with_ai(message: str) -> str:
-
-    if not API_KEY or not MODEL:
-        raise ValueError(
-            "OPENROUTER_API_KEY or LLM_MODEL is missing from .env"
-        )
-
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    payload = {
-        "model": MODEL,
-        "messages": [
-            {
-                "role": "user",
-                "content": message,
-            }
-        ],
-    }
-
-    response = requests.post(
-        API_URL,
-        headers=headers,
-        json=payload,
-        timeout=60,
-    )
-
-    response.raise_for_status()
-
-    data = response.json()
-
-    return data["choices"][0]["message"]["content"]
+if not LLM_API_KEY:
+    raise ValueError("LLM_API_KEY is missing from .env")
+if not LLM_MODEL:
+    raise ValueError("LLM_MODEL is missing from .env")
 
 
 def main():
-    print("===== Simple Grok Chat =====")
+    print("================================")
+    print("    AI STUDY ASSISTANT")
+    print("================================")
+    print()
+
+    message_history = []
 
     while True:
-        user_message = input("You: ").strip()
+        question = input("You: ").strip()
 
-        if user_message.lower() == "exit":
+        if not question:
+            continue
+        if question.lower() == "exit":
             print("Goodbye!")
             break
 
-        if not user_message:
-            continue
-
         try:
-            answer = chat_with_ai(user_message)
-            print(f"\nAI: {answer}\n")
+            print("Thinking...")
+            output_data, message_history = run_agent(question, message_history)
 
+            print()
+            print("AI:")
+            print(f"Answer: {output_data.get('answer')}")
+            print(f"Topic: {output_data.get('topic')}")
+            print(f"Difficulty: {output_data.get('difficulty')}")
+            print(f"Used calculator: {output_data.get('used_calculator')}")
+            print(f"Used weather: {output_data.get('used_weather')}")
+            print(f"Used web search: {output_data.get('used_web_search')}")
+            print()
 
         except Exception as error:
-            print(f"Error: {error}\n")
+            print()
+            print("Something went wrong:")
+            print(repr(error))
+            print()
 
 
 if __name__ == "__main__":
     main()
+    
