@@ -105,7 +105,7 @@ def run_agent(user_question: str, message_history: list) -> tuple:
         choice = data["choices"][0]
         message = choice["message"]
 
-        # Check if the model wants to call tools
+        # Check if the model wants to call tools 
         if message.get("tool_calls"):
             message_history.append(message)
 
